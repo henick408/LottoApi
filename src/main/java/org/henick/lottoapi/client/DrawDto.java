@@ -6,7 +6,7 @@ import java.util.List;
 record DrawDto(
         long drawSystemId,
         OffsetDateTime drawDate,
-        String gametype,
+        String gameType,
         Integer multiplierValue,
         List<GameResultDto> results,
         boolean showSpecialResults,
