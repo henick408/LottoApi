@@ -6,6 +6,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -58,6 +60,24 @@ public class LottoApiClientImpl implements LottoApiClient {
                 .map(lottoMapper::fromGameResultDto)
                 .toList();
 
+    }
+
+    @Override
+    public List<Draw> getResultsByDate(LocalDate drawDate) {
+
+        List<DrawDto> draws = lottoClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/draw-results/by-date")
+                        .queryParam("drawDate", drawDate)
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        return draws.stream()
+                .filter(drawDto -> GameType.contains(drawDto.gameType()))
+                .flatMap(drawDto -> drawDto.results().stream())
+                .map(lottoMapper::fromGameResultDto)
+                .toList();
 
     }
 
