@@ -16,5 +16,13 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(response.status()).body(response);
     }
+    @ExceptionHandler(UnknownGameException.class)
+    public ResponseEntity<ErrorResponse> handleUnknownGame(UnknownGameException exception) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                exception.getMessage()
+        );
+        return ResponseEntity.status(response.status()).body(response);
+    }
 
 }
