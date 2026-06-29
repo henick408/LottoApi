@@ -3,7 +3,6 @@ package org.henick.lottoapi.client;
 import org.henick.lottoapi.model.Draw;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 public interface LottoApiClient {
@@ -12,5 +11,6 @@ public interface LottoApiClient {
     List<Draw> getLastResults();
 
     List<Draw> getResultsByDate(LocalDate drawDate);
+    Draw getResultsByDateByGame(LocalDate drawDate, String gameTypeRaw);
 
 }
