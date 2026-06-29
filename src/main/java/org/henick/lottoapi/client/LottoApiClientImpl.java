@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -31,7 +32,8 @@ public class LottoApiClientImpl implements LottoApiClient {
                         .queryParam("gameType", apiValue)
                         .build())
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
 
         if (draws == null || draws.isEmpty()) {
             throw new IllegalStateException("No draws returned from API for game: " + apiValue);
@@ -41,7 +43,7 @@ public class LottoApiClientImpl implements LottoApiClient {
                 .filter(dto -> apiValue.equals(dto.gameType()))
                 .findFirst()
                 .map(lottoMapper::fromDrawDto)
-                .orElseThrow(() -> new IllegalStateException("No matching draw for game: " + apiValue));
+                .orElse(null);
     }
 
     @Override
@@ -96,7 +98,7 @@ public class LottoApiClientImpl implements LottoApiClient {
                 .filter(dto -> apiValue.equals(dto.gameType()))
                 .findFirst()
                 .map(lottoMapper::fromDrawDto)
-                .orElseThrow(() -> new IllegalStateException("No matching draw for game: " + apiValue));
+                .orElse(null);
 
     }
 
