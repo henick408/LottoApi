@@ -15,8 +15,8 @@ class LottoMapper {
                 result.drawSystemId(),
                 result.drawDate(),
                 GameType.from(result.gameType()),
-                result.resultsJson(),
-                result.specialResults()
+                result.resultsJson().stream().sorted().toList(),
+                result.specialResults().stream().sorted().toList()
         );
     }
 
@@ -25,8 +25,8 @@ class LottoMapper {
                 dto.drawSystemId(),
                 dto.drawDate(),
                 GameType.from(dto.gameType()),
-                dto.resultsJson(),
-                dto.specialResults()
+                dto.resultsJson().stream().sorted().toList(),
+                dto.specialResults().stream().sorted().toList()
         );
     }
 
