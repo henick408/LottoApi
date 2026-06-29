@@ -4,13 +4,14 @@ import org.henick.lottoapi.model.Draw;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface LottoApiClient {
 
-    Draw getLastResultsByGame(String gameTypeRaw);
+    Optional<Draw> getLastResultsByGame(String gameTypeRaw);
     List<Draw> getLastResults();
 
     List<Draw> getResultsByDate(LocalDate drawDate);
-    Draw getResultsByDateByGame(LocalDate drawDate, String gameTypeRaw);
+    Optional<Draw> getResultsByDateByGame(LocalDate drawDate, String gameTypeRaw);
 
 }

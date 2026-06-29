@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class LottoApiClientImpl implements LottoApiClient {
@@ -22,7 +22,7 @@ public class LottoApiClientImpl implements LottoApiClient {
     }
 
     @Override
-    public Draw getLastResultsByGame(String gameTypeRaw) {
+    public Optional<Draw> getLastResultsByGame(String gameTypeRaw) {
         GameType gameType = GameType.from(gameTypeRaw);
         String apiValue = gameType.getApiValue();
 
@@ -42,8 +42,7 @@ public class LottoApiClientImpl implements LottoApiClient {
         return draws.stream()
                 .filter(dto -> apiValue.equals(dto.gameType()))
                 .findFirst()
-                .map(lottoMapper::fromDrawDto)
-                .orElse(null);
+                .map(lottoMapper::fromDrawDto);
     }
 
     @Override
@@ -82,7 +81,7 @@ public class LottoApiClientImpl implements LottoApiClient {
     }
 
     @Override
-    public Draw getResultsByDateByGame(LocalDate drawDate, String gameTypeRaw) {
+    public Optional<Draw> getResultsByDateByGame(LocalDate drawDate, String gameTypeRaw) {
         GameType gameType = GameType.from(gameTypeRaw);
         String apiValue = gameType.getApiValue();
 
@@ -97,8 +96,7 @@ public class LottoApiClientImpl implements LottoApiClient {
         return draws.stream()
                 .filter(dto -> apiValue.equals(dto.gameType()))
                 .findFirst()
-                .map(lottoMapper::fromDrawDto)
-                .orElse(null);
+                .map(lottoMapper::fromDrawDto);
 
     }
 
