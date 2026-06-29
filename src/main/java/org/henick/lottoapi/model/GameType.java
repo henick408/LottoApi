@@ -1,5 +1,7 @@
 package org.henick.lottoapi.model;
 
+import org.henick.lottoapi.exception.UnknownGameException;
+
 import java.util.Arrays;
 
 public enum GameType {
@@ -22,7 +24,7 @@ public enum GameType {
         return Arrays.stream(values())
                 .filter(gameType -> gameType.name().equalsIgnoreCase(value))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Unknown game type: " + value));
+                .orElseThrow(() -> new UnknownGameException("Unknown game type: " + value));
     }
 
     public static boolean contains(String value) {
