@@ -1,6 +1,7 @@
 package org.henick.lottoapi.client;
 
 import org.henick.lottoapi.model.Draw;
+import org.henick.lottoapi.model.DrawPrize;
 import org.henick.lottoapi.model.GameType;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -14,11 +15,13 @@ import java.util.Optional;
 public class LottoApiClientImpl implements LottoApiClient {
 
     private final RestClient lottoClient;
-    private final LottoMapper lottoMapper;
+    private final DrawMapper drawMapper;
+    private final PrizeMapper prizeMapper;
 
-    LottoApiClientImpl(RestClient lottoClient, LottoMapper lottoMapper) {
+    LottoApiClientImpl(RestClient lottoClient, DrawMapper drawMapper, PrizeMapper prizeMapper) {
         this.lottoClient = lottoClient;
-        this.lottoMapper = lottoMapper;
+        this.drawMapper = drawMapper;
+        this.prizeMapper = prizeMapper;
     }
 
     @Override
@@ -42,7 +45,7 @@ public class LottoApiClientImpl implements LottoApiClient {
         return draws.stream()
                 .filter(dto -> apiValue.equals(dto.gameType()))
                 .findFirst()
-                .map(lottoMapper::fromDrawDto);
+                .map(drawMapper::fromDrawDto);
     }
 
     @Override
@@ -56,7 +59,7 @@ public class LottoApiClientImpl implements LottoApiClient {
         return draws.stream()
                 .filter(drawDto -> GameType.contains(drawDto.gameType()))
                 .flatMap(drawDto -> drawDto.results().stream())
-                .map(lottoMapper::fromGameResultDto)
+                .map(drawMapper::fromGameResultDto)
                 .toList();
 
     }
@@ -75,9 +78,25 @@ public class LottoApiClientImpl implements LottoApiClient {
         return draws.stream()
                 .filter(drawDto -> GameType.contains(drawDto.gameType()))
                 .flatMap(drawDto -> drawDto.results().stream())
-                .map(lottoMapper::fromGameResultDto)
+                .map(drawMapper::fromGameResultDto)
                 .toList();
 
+    }
+
+    @Override
+    public Optional<DrawPrize> getPrize(String gameTypeRaw, long drawSystemId) {
+        GameType gameType = GameType.from(gameTypeRaw);
+        String apiValue = gameType.getApiValue();
+
+        List<DrawPrizeDto> prizes = lottoClient.get()
+                .uri("/draw-prizes/{drawType}/{drawSystemId}", apiValue, drawSystemId)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        return prizes.stream()
+                .filter(dto -> apiValue.equals(dto.gameType()))
+                .map(prizeMapper::fromDto)
+                .findFirst();
     }
 
     @Override
@@ -96,7 +115,7 @@ public class LottoApiClientImpl implements LottoApiClient {
         return draws.stream()
                 .filter(dto -> apiValue.equals(dto.gameType()))
                 .findFirst()
-                .map(lottoMapper::fromDrawDto);
+                .map(drawMapper::fromDrawDto);
 
     }
 

@@ -5,7 +5,7 @@ import org.henick.lottoapi.model.GameType;
 import org.springframework.stereotype.Component;
 
 @Component
-class LottoMapper {
+class DrawMapper {
 
     Draw fromDrawDto(DrawDto dto) {
         GameResultDto result = dto.results().stream()

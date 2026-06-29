@@ -6,7 +6,7 @@ import java.util.Map;
 record DrawPrizeDto(
         Map<Integer, PrizeDto> prizes,
         OffsetDateTime drawDate,
-        long drawSystemId,
+        Long drawSystemId,
         String gameType,
         boolean prizesEmpty
 ) {
