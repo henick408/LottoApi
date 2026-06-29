@@ -25,4 +25,9 @@ public enum GameType {
                 .orElseThrow(() -> new IllegalArgumentException("Unknown game type: " + value));
     }
 
+    public static boolean contains(String value) {
+        return Arrays.stream(values())
+                .anyMatch(gameType -> gameType.getApiValue().equalsIgnoreCase(value));
+    }
+
 }

@@ -39,9 +39,26 @@ public class LottoApiClientImpl implements LottoApiClient {
         return draws.stream()
                 .filter(dto -> apiValue.equals(dto.gameType()))
                 .findFirst()
-                .map(lottoMapper::fromDto)
+                .map(lottoMapper::fromDrawDto)
                 .orElseThrow(() ->
                         new IllegalStateException("No matching draw for game: " + apiValue));
+    }
+
+    @Override
+    public List<Draw> getLastResults() {
+
+        List<DrawDto> draws = lottoClient.get()
+                .uri("/draw-results/last-results")
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        return draws.stream()
+                .filter(drawDto -> GameType.contains(drawDto.gameType()))
+                .flatMap(drawDto -> drawDto.results().stream())
+                .map(lottoMapper::fromGameResultDto)
+                .toList();
+
+
     }
 
 }

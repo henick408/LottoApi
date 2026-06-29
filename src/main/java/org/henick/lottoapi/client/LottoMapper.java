@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 class LottoMapper {
 
-    Draw fromDto(DrawDto dto) {
+    Draw fromDrawDto(DrawDto dto) {
         GameResultDto result = dto.results().stream()
                 .filter(resultDto -> resultDto.gameType().equals(dto.gameType()))
                 .findFirst().get();
@@ -17,6 +17,16 @@ class LottoMapper {
                 GameType.from(result.gameType()),
                 result.resultsJson(),
                 result.specialResults()
+        );
+    }
+
+    Draw fromGameResultDto(GameResultDto dto) {
+        return new Draw(
+                dto.drawSystemId(),
+                dto.drawDate(),
+                GameType.from(dto.gameType()),
+                dto.resultsJson(),
+                dto.specialResults()
         );
     }
 
