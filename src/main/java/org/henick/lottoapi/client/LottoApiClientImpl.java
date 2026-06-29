@@ -6,6 +6,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -30,7 +32,8 @@ public class LottoApiClientImpl implements LottoApiClient {
                         .queryParam("gameType", apiValue)
                         .build())
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .body(new ParameterizedTypeReference<>() {
+                });
 
         if (draws == null || draws.isEmpty()) {
             throw new IllegalStateException("No draws returned from API for game: " + apiValue);
@@ -40,8 +43,7 @@ public class LottoApiClientImpl implements LottoApiClient {
                 .filter(dto -> apiValue.equals(dto.gameType()))
                 .findFirst()
                 .map(lottoMapper::fromDrawDto)
-                .orElseThrow(() ->
-                        new IllegalStateException("No matching draw for game: " + apiValue));
+                .orElse(null);
     }
 
     @Override
@@ -58,7 +60,47 @@ public class LottoApiClientImpl implements LottoApiClient {
                 .map(lottoMapper::fromGameResultDto)
                 .toList();
 
+    }
+
+    @Override
+    public List<Draw> getResultsByDate(LocalDate drawDate) {
+
+        List<DrawDto> draws = lottoClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/draw-results/by-date")
+                        .queryParam("drawDate", drawDate)
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        return draws.stream()
+                .filter(drawDto -> GameType.contains(drawDto.gameType()))
+                .flatMap(drawDto -> drawDto.results().stream())
+                .map(lottoMapper::fromGameResultDto)
+                .toList();
 
     }
+
+    @Override
+    public Draw getResultsByDateByGame(LocalDate drawDate, String gameTypeRaw) {
+        GameType gameType = GameType.from(gameTypeRaw);
+        String apiValue = gameType.getApiValue();
+
+        List<DrawDto> draws = lottoClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/draw-results/by-date")
+                        .queryParam("drawDate", drawDate)
+                        .build())
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {});
+
+        return draws.stream()
+                .filter(dto -> apiValue.equals(dto.gameType()))
+                .findFirst()
+                .map(lottoMapper::fromDrawDto)
+                .orElse(null);
+
+    }
+
 
 }
