@@ -24,5 +24,13 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(response.status()).body(response);
     }
+    @ExceptionHandler(DrawNotFoundByDateException.class)
+    public ResponseEntity<ErrorResponse> handleDrawNotFoundOnGivenDate(DrawNotFoundByDateException exception) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                exception.getMessage()
+        );
+        return ResponseEntity.status(response.status()).body(response);
+    }
 
 }

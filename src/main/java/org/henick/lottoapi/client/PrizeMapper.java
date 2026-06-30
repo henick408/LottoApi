@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class PrizeMapper {
+class PrizeMapper {
 
     DrawPrize fromDto(DrawPrizeDto dto) {
         List<Prize> prizes = dto.prizes().entrySet().stream()
