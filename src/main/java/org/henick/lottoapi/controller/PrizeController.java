@@ -28,4 +28,11 @@ public class PrizeController {
         return ResponseEntity.ok(drawPrizeResponse);
     }
 
+    @GetMapping("{gameType}")
+    public ResponseEntity<DrawPrizeResponse> getPrizeForLastResult(@PathVariable String gameType) {
+        DrawPrize drawPrize = prizeService.getPrizeForLastGame(GameType.from(gameType));
+        DrawPrizeResponse drawPrizeResponse = responseMapper.toResponse(drawPrize);
+        return ResponseEntity.ok(drawPrizeResponse);
+    }
+
 }
