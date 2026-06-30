@@ -1,4 +1,4 @@
-package org.henick.lottoapi;
+package org.henick.lottoapi.controller;
 
 import org.henick.lottoapi.model.Draw;
 import org.henick.lottoapi.model.GameType;
