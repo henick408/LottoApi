@@ -6,5 +6,6 @@ import org.henick.lottoapi.model.GameType;
 public interface PrizeService {
 
     DrawPrize getPrize(GameType gameType, long drawSystemId);
+    DrawPrize getPrizeForLastGame(GameType gameType);
 
 }
