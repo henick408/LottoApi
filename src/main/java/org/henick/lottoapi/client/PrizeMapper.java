@@ -18,7 +18,7 @@ class PrizeMapper {
                         entry.getValue().prizeValue()
                 ))
                 .toList();
-        return new DrawPrize(GameType.from(dto.gameType()), dto.drawDate(), prizes);
+        return new DrawPrize(dto.drawSystemId(), GameType.from(dto.gameType()), dto.drawDate(), prizes);
     }
 
 }

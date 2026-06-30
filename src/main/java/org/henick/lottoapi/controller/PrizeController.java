@@ -14,15 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class PrizeController {
 
     private final PrizeService prizeService;
+    private final ResponseMapper responseMapper;
 
-    public PrizeController(PrizeService prizeService) {
+    public PrizeController(PrizeService prizeService, ResponseMapper responseMapper) {
         this.prizeService = prizeService;
+        this.responseMapper = responseMapper;
     }
 
     @GetMapping("/{gameType}/{drawSystemId}")
-    public ResponseEntity<DrawPrize> getPrize(@PathVariable String gameType, @PathVariable long drawSystemId) {
+    public ResponseEntity<DrawPrizeResponse> getPrize(@PathVariable String gameType, @PathVariable long drawSystemId) {
         DrawPrize drawPrize = prizeService.getPrize(GameType.from(gameType), drawSystemId);
-        return ResponseEntity.ok(drawPrize);
+        DrawPrizeResponse drawPrizeResponse = responseMapper.toResponse(drawPrize);
+        return ResponseEntity.ok(drawPrizeResponse);
     }
 
 }

@@ -15,36 +15,44 @@ import java.util.List;
 public class ResultController {
 
     private final ResultService resultService;
+    private final ResponseMapper responseMapper;
 
-    public ResultController(ResultService resultService) {
+    public ResultController(ResultService resultService, ResponseMapper responseMapper) {
         this.resultService = resultService;
+        this.responseMapper = responseMapper;
     }
 
     @GetMapping("/{gameType}")
-    public ResponseEntity<Draw> getDrawsByGame(
+    public ResponseEntity<DrawResponse> getDrawsByGame(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate drawDate,
             @PathVariable String gameType
     ) {
         if (drawDate == null) {
-            return ResponseEntity.ok(resultService.getLastResults(GameType.from(gameType)));
+            Draw draw = resultService.getLastResults(GameType.from(gameType));
+            return ResponseEntity.ok(responseMapper.toResponse(draw));
         }
 
-        return ResponseEntity.ok(resultService.getResultsByDate(drawDate, GameType.from(gameType)));
+        Draw draw = resultService.getResultsByDate(drawDate, GameType.from(gameType));
+        return ResponseEntity.ok(responseMapper.toResponse(draw));
     }
 
     @GetMapping
-    public ResponseEntity<List<Draw>> getDraws(
+    public ResponseEntity<List<DrawResponse>> getDraws(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate drawDate
     ) {
         if (drawDate == null) {
-            return ResponseEntity.ok(resultService.getLastResults());
+            List<Draw> draws = resultService.getLastResults();
+            List<DrawResponse> drawResponses = draws.stream().map(responseMapper::toResponse).toList();
+            return ResponseEntity.ok(drawResponses);
         }
 
-        return ResponseEntity.ok(resultService.getResultsByDate(drawDate));
+        List<Draw> draws = resultService.getResultsByDate(drawDate);
+        List<DrawResponse> drawResponses = draws.stream().map(responseMapper::toResponse).toList();
+        return ResponseEntity.ok(drawResponses);
     }
 
 }
