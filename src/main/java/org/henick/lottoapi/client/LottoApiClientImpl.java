@@ -1,5 +1,6 @@
 package org.henick.lottoapi.client;
 
+import org.henick.lottoapi.exception.DrawNotFoundException;
 import org.henick.lottoapi.model.Draw;
 import org.henick.lottoapi.model.DrawPrize;
 import org.henick.lottoapi.model.GameType;
@@ -39,7 +40,7 @@ public class LottoApiClientImpl implements LottoApiClient {
                 });
 
         if (draws == null || draws.isEmpty()) {
-            throw new IllegalStateException("No draws returned from API for game: " + apiValue);
+            throw new DrawNotFoundException("No draws returned from API for game: " + apiValue);
         }
 
         return draws.stream()
