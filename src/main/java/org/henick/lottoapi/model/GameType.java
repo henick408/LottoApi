@@ -19,6 +19,9 @@ public enum GameType {
     private final OffsetTime drawTime;
 
     GameType(String apiValue, List<DayOfWeek> drawWeekDays, OffsetTime drawTime) {
+        if (drawWeekDays.isEmpty()) {
+            throw new IllegalArgumentException("drawWeekDays must not be empty for " + apiValue);
+        }
         this.apiValue = apiValue;
         this.drawWeekDays = drawWeekDays;
         this.drawTime = drawTime;
@@ -27,6 +30,7 @@ public enum GameType {
     public String getApiValue() {
         return apiValue;
     }
+
     public List<DayOfWeek> getDrawWeekDays() {
         return drawWeekDays;
     }
@@ -37,14 +41,12 @@ public enum GameType {
 
     public static GameType from(String value) {
         return Arrays.stream(values())
-                .filter(gameType -> gameType.name().equalsIgnoreCase(value))
+                .filter(gameType -> gameType.apiValue.equalsIgnoreCase(value))
                 .findFirst()
                 .orElseThrow(() -> new UnknownGameException("Unknown game type: " + value));
     }
 
     public static boolean contains(String value) {
-        return Arrays.stream(values())
-                .anyMatch(gameType -> gameType.getApiValue().equalsIgnoreCase(value));
+        return Arrays.stream(values()).anyMatch(gameType -> gameType.apiValue.equalsIgnoreCase(value));
     }
-
 }

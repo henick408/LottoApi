@@ -2,6 +2,7 @@ package org.henick.lottoapi.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.ToString;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Getter
 @Entity
+@ToString
 public class Draw {
 
     @Id
