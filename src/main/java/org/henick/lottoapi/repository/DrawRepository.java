@@ -13,4 +13,6 @@ import java.util.Optional;
 public interface DrawRepository extends JpaRepository<Draw, Long> {
     Optional<Draw> findTopByGameTypeOrderByDrawDateDesc(GameType gameType);
     Optional<Draw> findByGameTypeAndDrawDate(GameType gameType, OffsetDateTime drawDate);
+
+    boolean existsByDrawDate(OffsetDateTime drawDate);
 }

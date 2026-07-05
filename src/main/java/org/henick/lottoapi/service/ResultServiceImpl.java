@@ -10,6 +10,7 @@ import org.henick.lottoapi.util.DrawDateProvider;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.OffsetTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +39,7 @@ public class ResultServiceImpl implements ResultService {
         }
         Draw drawFromClient = lottoApiClient.getLastResultsByGame(gameType.getApiValue())
                 .orElseThrow(() -> new DrawNotFoundException("No draws returned from API for game: " + gameType));
-        drawRepository.save(drawFromClient);
+        upsert(drawFromClient);
         return drawFromClient;
     }
 
@@ -56,17 +57,11 @@ public class ResultServiceImpl implements ResultService {
                 .map(Draw::getGameType)
                 .collect(Collectors.toSet())
                 .containsAll(Set.of(GameType.values()));
-        System.out.println("latestResultsFromDatabasePerGame: " + latestResultsFromDatabasePerGame);
-
-        System.out.println("isAllLatestDraws: " + isAllLatestDraws);
-        System.out.println("containsAllGameTypes: " + containsAllGameTypes);
 
         if (isAllLatestDraws && containsAllGameTypes) {
-            System.out.println("Returned from database");
             return latestResultsFromDatabasePerGame;
         }
 
-        System.out.println("Returned from client");
         return lottoApiClient.getLastResults().stream()
                 .map(this::upsert)
                 .toList();
@@ -90,8 +85,20 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public Draw getResultsByDate(LocalDate drawDate, GameType gameType) {
-        return lottoApiClient.getResultsByDateByGame(drawDate, gameType.getApiValue())
+        OffsetTime drawTime = gameType.getDrawTime(drawDate.getDayOfWeek());
+        Draw drawFromDatabase = drawRepository.findByGameTypeAndDrawDate(gameType, drawDate.atTime(drawTime))
+                .orElse(null);
+
+        if (drawFromDatabase != null) {
+            return drawFromDatabase;
+        }
+
+        Draw drawFromClient = lottoApiClient.getResultsByDateByGame(drawDate, gameType.getApiValue())
                 .orElseThrow(() -> new DrawNotFoundByDateException(gameType, drawDate));
+
+        upsert(drawFromClient);
+        return drawFromClient;
+
     }
 
 }
