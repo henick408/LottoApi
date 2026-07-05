@@ -45,21 +45,21 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public List<Draw> getLastResults() {
-        List<Draw> latestResultsFromDatabasePerGame = Arrays.stream(GameType.values())
+        List<Draw> latestDrawsFromDatabasePerGame = Arrays.stream(GameType.values())
                 .map(drawRepository::findTopByGameTypeOrderByDrawDateDesc)
                 .flatMap(Optional::stream)
                 .toList();
 
-        boolean isAllLatestDraws = latestResultsFromDatabasePerGame.stream()
+        boolean isAllLatestDraws = latestDrawsFromDatabasePerGame.stream()
                 .allMatch(draw -> drawDateProvider.isLastDrawDate(draw.getGameType(), draw.getDrawDate()));
 
-        boolean containsAllGameTypes = latestResultsFromDatabasePerGame.stream()
+        boolean containsAllGameTypes = latestDrawsFromDatabasePerGame.stream()
                 .map(Draw::getGameType)
                 .collect(Collectors.toSet())
                 .containsAll(Set.of(GameType.values()));
 
         if (isAllLatestDraws && containsAllGameTypes) {
-            return latestResultsFromDatabasePerGame;
+            return latestDrawsFromDatabasePerGame;
         }
 
         return lottoApiClient.getLastResults().stream()
@@ -80,7 +80,21 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public List<Draw> getResultsByDate(LocalDate drawDate) {
-        return lottoApiClient.getResultsByDate(drawDate);
+        List<Draw> drawsFromDatabase = drawRepository.findByDrawDate(drawDate);
+        System.out.println(drawsFromDatabase);
+
+        boolean containsAllGameTypesForWeekDay = drawsFromDatabase.stream()
+                .map(Draw::getGameType)
+                .collect(Collectors.toSet())
+                .containsAll(GameType.getGameTypesByDayOfWeek(drawDate.getDayOfWeek()));
+
+        if (containsAllGameTypesForWeekDay) {
+            return drawsFromDatabase;
+        }
+
+        return lottoApiClient.getResultsByDate(drawDate).stream()
+                .map(this::upsert)
+                .toList();
     }
 
     @Override

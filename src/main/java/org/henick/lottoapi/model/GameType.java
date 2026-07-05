@@ -44,6 +44,12 @@ public enum GameType {
         return apiValue;
     }
 
+    public static Set<GameType> getGameTypesByDayOfWeek(DayOfWeek dayOfWeek) {
+        return Arrays.stream(values())
+                .filter(gameType -> gameType.drawSchedule.containsKey(dayOfWeek))
+                .collect(Collectors.toSet());
+    }
+
     public Set<DayOfWeek> getDrawWeekDays() {
         return drawSchedule.keySet();
     }
