@@ -11,7 +11,7 @@ public class ResponseMapper {
 
     DrawResponse toResponse(Draw draw) {
         return new DrawResponse(
-                draw.getId(),
+                draw.getDrawSystemId(),
                 draw.getDrawDate(),
                 draw.getGameType(),
                 draw.getResults(),
