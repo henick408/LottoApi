@@ -10,8 +10,11 @@ import org.henick.lottoapi.util.DrawDateProvider;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ResultServiceImpl implements ResultService {
@@ -41,7 +44,43 @@ public class ResultServiceImpl implements ResultService {
 
     @Override
     public List<Draw> getLastResults() {
-        return lottoApiClient.getLastResults();
+        List<Draw> latestResultsFromDatabasePerGame = Arrays.stream(GameType.values())
+                .map(drawRepository::findTopByGameTypeOrderByDrawDateDesc)
+                .flatMap(Optional::stream)
+                .toList();
+
+        boolean isAllLatestDraws = latestResultsFromDatabasePerGame.stream()
+                .allMatch(draw -> drawDateProvider.isLastDrawDate(draw.getGameType(), draw.getDrawDate()));
+
+        boolean containsAllGameTypes = latestResultsFromDatabasePerGame.stream()
+                .map(Draw::getGameType)
+                .collect(Collectors.toSet())
+                .containsAll(Set.of(GameType.values()));
+        System.out.println("latestResultsFromDatabasePerGame: " + latestResultsFromDatabasePerGame);
+
+        System.out.println("isAllLatestDraws: " + isAllLatestDraws);
+        System.out.println("containsAllGameTypes: " + containsAllGameTypes);
+
+        if (isAllLatestDraws && containsAllGameTypes) {
+            System.out.println("Returned from database");
+            return latestResultsFromDatabasePerGame;
+        }
+
+        System.out.println("Returned from client");
+        return lottoApiClient.getLastResults().stream()
+                .map(this::upsert)
+                .toList();
+
+    }
+
+    private Draw upsert(Draw drawFromClient) {
+        return drawRepository.findByGameTypeAndDrawDate(drawFromClient.getGameType(), drawFromClient.getDrawDate())
+                .map(existing -> {
+                    existing.setResults(drawFromClient.getResults());
+                    existing.setSpecialResults(drawFromClient.getSpecialResults());
+                    return existing;
+                })
+                .orElseGet(() -> drawRepository.save(drawFromClient));
     }
 
     @Override
