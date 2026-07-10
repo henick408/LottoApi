@@ -26,7 +26,7 @@ public class PrizeServiceImpl implements PrizeService {
     public DrawPrize getPrizeForLastGame(GameType gameType) {
         long drawSystemId = lottoApiClient.getLastResultsByGame(gameType.getApiValue())
                 .orElseThrow(() -> new DrawNotFoundException("No draws returned from API for game: " + gameType.getApiValue()))
-                .getId();
+                .getDrawSystemId();
         return lottoApiClient.getPrize(gameType.getApiValue(), drawSystemId)
                 .orElseThrow(() -> new DrawNotFoundByGameTypeAndId(gameType, drawSystemId));
     }

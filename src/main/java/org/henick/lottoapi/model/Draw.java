@@ -28,11 +28,11 @@ public class Draw {
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "integer[]")
-    List<Integer> results;
+    private List<Integer> results;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
     @Column(columnDefinition = "integer[]")
-    List<Integer> specialResults;
+    private List<Integer> specialResults;
 
     public Draw(Long drawSystemId, OffsetDateTime drawDate, GameType gameType, List<Integer> results, List<Integer> specialResults) {
         this.drawSystemId = drawSystemId;
