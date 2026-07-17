@@ -19,6 +19,7 @@ public class DrawPrize {
     private Long drawSystemId;
 
     @Column(name = "game_type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private GameType gameType;
 
     @Column(name = "draw_date", nullable = false)
