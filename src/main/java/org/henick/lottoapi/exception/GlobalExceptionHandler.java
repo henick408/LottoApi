@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -28,6 +29,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDrawNotFoundOnGivenDate(DrawNotFoundByDateException exception) {
         ErrorResponse response = new ErrorResponse(
                 HttpStatus.NOT_FOUND,
+                exception.getMessage()
+        );
+        return ResponseEntity.status(response.status()).body(response);
+    }
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ErrorResponse> handleHttpClientErrorException(HttpClientErrorException exception) {
+        ErrorResponse response = new ErrorResponse(
+                HttpStatus.valueOf(exception.getStatusCode().value()),
                 exception.getMessage()
         );
         return ResponseEntity.status(response.status()).body(response);

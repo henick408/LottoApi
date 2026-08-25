@@ -5,7 +5,7 @@ import org.henick.lottoapi.model.GameType;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-record DrawPrizeResponse(
+public record DrawPrizeResponse(
         long drawSystemId,
         GameType gameType,
         OffsetDateTime drawDate,

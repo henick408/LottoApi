@@ -100,6 +100,9 @@ public class ResultServiceImpl implements ResultService {
     @Override
     public Draw getResultsByDate(LocalDate drawDate, GameType gameType) {
         OffsetTime drawTime = gameType.getDrawTime(drawDate.getDayOfWeek());
+        if (drawTime == null) {
+            throw new DrawNotFoundByDateException(gameType, drawDate);
+        }
         Draw drawFromDatabase = drawRepository.findByGameTypeAndDrawDate(gameType, drawDate.atTime(drawTime))
                 .orElse(null);
 
