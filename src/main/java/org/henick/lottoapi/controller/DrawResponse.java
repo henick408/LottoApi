@@ -7,7 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-record DrawResponse(
+public record DrawResponse(
         long drawSystemId,
         OffsetDateTime drawDate,
         GameType gameType,

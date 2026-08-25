@@ -29,7 +29,7 @@ public class ResponseMapper {
                 .toList();
 
         return new DrawPrizeResponse(
-                drawPrize.getId(),
+                drawPrize.getDrawSystemId(),
                 drawPrize.getGameType(),
                 drawPrize.getDrawDate(),
                 prizes
